@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="description" content="" />
+<meta name="author" content="" />
+<title>Question Answering</title>
+<!-- Favicon-->
+<link rel="icon" type="image/x-icon" href="static/assets/img/favicon.ico" />
+<!-- Font Awesome icons (free version)-->
+<script src="static/assets/fontawesome.js" crossorigin="anonymous"></script>
+<!-- Google fonts-->
+<link href="static/assets/fontgoogle.css" rel="stylesheet" type="text/css" />
+<link href="static/assets/fontgoogle2.css" rel="stylesheet" type="text/css" />
+<!-- Core theme CSS (includes Bootstrap)-->
+<link href="static/css/styles.css" rel="stylesheet" />
+<link href="static/css/main.css" rel="stylesheet" />
+<script type="text/javascript" src="/eel.js"></script>
+</head>
+<body>
+
+
+<!-- videdddddddddddddddddddddddddddddddddddddddd -->
+<div id="app">
+
+<!-- navbar-->
+<nav class="navbar navbar-expand-lg bg-secondary text-uppercase fixed-top" id="mainNav">
+<div class="container">
+    <h3 style="color:white">Question Answering</h1>
+    <button class="navbar-toggler navbar-toggler-right text-uppercase font-weight-bold bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        Menu
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item mx-0 mx-lg-1"><a v-on:click="select_tab(1)" class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" v-bind:class="{active: tab==1}" style="cursor: pointer;">Distance</a></li>
+            <li class="nav-item mx-0 mx-lg-1"><a v-on:click="select_tab(2)" class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" v-bind:class="{active: tab==2}"  style="cursor: pointer;">Attention</a></li>
+            <li class="nav-item mx-0 mx-lg-1"><a v-on:click="select_tab(3)" class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" v-bind:class="{active: tab==3}"  style="cursor: pointer;">LSTM</a></li>
+            <li class="nav-item mx-0 mx-lg-1"><a v-on:click="select_tab(4)" class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" v-bind:class="{active: tab==4}"  style="cursor: pointer;">Transfert</a></li>
+        </ul>
+    </div>
+</div>
+</nav>
+<!--navbar-->
+
+<section class="page-section" id="contact">
+<div class="container" v-if="tab == 1">
+    <!-- Contact Section Heading-->
+    <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">{{selected}}</h2>
+    <!-- Icon Divider-->
+    <div class="divider-custom">
+        <div class="divider-custom-line"></div>
+        <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+        <div class="divider-custom-line"></div>
+    </div>
+    <!-- Contact Section Form-->
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- To configure the contact form email address, go to mail/contact_me.php and update the email address in the PHP file on line 19.-->
+            <select class="custom-select" id="GroupSelect"  v-model="exemplechange">
+                <option selected >Choisissez un exemple</option>
+                <option value="1" >exemple 1</option>
+                <option value="2">exemple 2</option>
+                <option value="3" >exemple 3</option>
+                <option value="4">exemple 4</option>
+                <option value="5" >exemple 5</option>
+                </select>
+                <br />
+                
+                
+                <div class="control-group">
+                    <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                        <label>Le texte</label>
+                        <textarea class="form-control" id="text" name="texte" v-model="text" rows="5" placeholder="Text" required="required" data-validation-required-message="Please enter a Text."></textarea>
+                        <p class="help-block text-danger"></p>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                        <label>La question</label>
+                        <input class="form-control" id="question" v-model="question" name="question" type="text" placeholder="Question" required="required" data-validation-required-message="Please enter your question." />
+                        <p class="help-block text-danger"></p>
+                    </div>
+                </div>
+                <br />
+                <select class="custom-select" id="inputGroupSelect01" v-model="selected">
+
+                    <option selected>Distance cosinus</option>
+                    <option >Distance euclidienne</option>
+                    </select>
+                
+                <br />
+                <br />
+                <div id="success"></div>
+                <div class="form-group" v-if="patienter == 0"><button class="btn btn-primary btn-xl" id="sendMessageButton" type="submit" v-on:click="sim">Répondre</button>
+                    <button class="btn btn-primary btn-xl" data-toggle="modal" data-target="#exampleModal" v-if="popup == 1" style="margin-left: 300px;">Afficher les détails</button>
+                </div>
+                <div class="form-group" v-if="patienter == 1">
+                    <button class="btn btn-primary btn-xl" id="sendMessageButton" type="submit"  disabled> 
+                        <span class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></span> Veuillez patienter
+                    </button>
+                </div>
+            
+                <div class="control-group">
+                    <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                        <label>La réponse</label>
+                        <input class="form-control" id="reponse" v-model="reponse" name="reponse" type="text" placeholder="La réponse" />
+                        <p class="help-block text-danger"></p>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2 eme section -->
+<div class="container" v-if="tab == 2">
+    <!-- Contact Section Heading-->
+    <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Attention</h2>
+    <!-- Icon Divider-->
+    <div class="divider-custom">
+        <div class="divider-custom-line"></div>
+        <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+        <div class="divider-custom-line"></div>
+    </div>
+    <!-- Contact Section Form-->
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- To configure the contact form email address, go to mail/contact_me.php and update the email address in the PHP file on line 19.-->
+            <select class="custom-select" id="GroupSelect"  v-model="exemplechange">
+                <option selected >Choisissez un exemple</option>
+                <option value="1" >exemple 1</option>
+                <option value="2">exemple 2</option>
+                <option value="3" >exemple 3</option>
+                <option value="4">exemple 4</option>
+                <option value="5" >exemple 5</option>
+                </select>
+                <br />
+                
+                
+                <div class="control-group">
+                    <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                        <label>Le texte</label>
+                        <textarea class="form-control" id="text" name="texte" v-model="text" rows="5" placeholder="Text" required="required" data-validation-required-message="Please enter a Text."></textarea>
+                        <p class="help-block text-danger"></p>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                        <label>La question</label>
+                        <input class="form-control" id="question" v-model="question" name="question" type="text" placeholder="Question" required="required" data-validation-required-message="Please enter your question." />
+                        <p class="help-block text-danger"></p>
+                    </div>
+                </div>
+                <br />
+                <div id="success"></div>
+                <div class="form-group" v-if="patienter == 0"><button class="btn btn-primary btn-xl" id="sendMessageButton" type="submit" v-on:click="attention">Répondre</button>
+                    <button class="btn btn-primary btn-xl" data-toggle="modal" data-target="#exampleModal" v-if="popup == 1" style="margin-left: 300px;">Afficher les détails</button>
+                </div>
+                <div class="form-group" v-if="patienter == 1">
+                    <button class="btn btn-primary btn-xl" id="sendMessageButton" type="submit" disabled> 
+                        <span class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></span> Veuillez patienter
+                    </button>
+                </div>
+            
+                <div class="control-group">
+                    <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                        <label>La réponse</label>
+                        <input class="form-control" id="reponse" v-model="reponse" name="reponse" type="text" placeholder="La réponse" />
+                        <p class="help-block text-danger"></p>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+
+<!-- LSTM section-->
+
+<div class="container" v-if="tab == 3">
+    <!-- Contact Section Heading-->
+    <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">LSTM</h2>
+    <!-- Icon Divider-->
+    <div class="divider-custom">
+        <div class="divider-custom-line"></div>
+        <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+        <div class="divider-custom-line"></div>
+    </div>
+    <!-- Contact Section Form-->
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- To configure the contact form email address, go to mail/contact_me.php and update the email address in the PHP file on line 19.-->
+            
+            <select class="custom-select" id="GroupSelect"  v-model="exemplechange">
+                <option selected >Choisissez un exemple</option>
+                <option value="1" >exemple 1</option>
+                <option value="2">exemple 2</option>
+                <option value="3" >exemple 3</option>
+                <option value="4">exemple 4</option>
+                <option value="5" >exemple 5</option>
+                </select>
+                <br />
+                
+                <div class="control-group">
+                    <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                        <label>Le texte</label>
+                        <textarea class="form-control" id="text" name="texte" v-model="text" rows="5" placeholder="Text" required="required" data-validation-required-message="Please enter a Text."></textarea>
+                        <p class="help-block text-danger"></p>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                        <label>La question</label>
+                        <input class="form-control" id="question" v-model="question" name="question" type="text" placeholder="Question" required="required" data-validation-required-message="Please enter your question." />
+                        <p class="help-block text-danger"></p>
+                    </div>
+                </div>
+                <br />
+                <div id="success" ></div>
+                <div class="form-group" v-if="patienter == 0"><button class="btn btn-primary btn-xl" id="sendMessageButton" type="submit" v-on:click="lstm">Répondre</button>
+                    <button class="btn btn-primary btn-xl" data-toggle="modal" data-target="#exampleModal" v-if="popup == 1" style="margin-left: 300px;">Afficher les détails</button>
+                </div>
+                <div class="form-group" v-if="patienter == 1">
+                    <button class="btn btn-primary btn-xl" id="sendMessageButton" type="submit" disabled> 
+                        <span class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></span> Veuillez patienter
+                    </button>
+                </div>
+                
+                <div class="control-group">
+                    <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                        <label>La réponse</label>
+                        <input class="form-control" id="reponse" v-model="reponse" name="reponse" type="text" placeholder="La réponse" />
+                        <p class="help-block text-danger"></p>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transfert section-->
+
+<div class="container" v-if="tab == 4">
+    <!-- Contact Section Heading-->
+    <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Transfert</h2>
+    <!-- Icon Divider-->
+    <div class="divider-custom">
+        <div class="divider-custom-line"></div>
+        <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+        <div class="divider-custom-line"></div>
+    </div>
+    <!-- Contact Section Form-->
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- To configure the contact form email address, go to mail/contact_me.php and update the email address in the PHP file on line 19.-->
+            
+            <select class="custom-select" id="GroupSelect"  v-model="exemplechange">
+                <option selected >Choisissez un exemple</option>
+                <option value="1" >exemple 1</option>
+                <option value="2">exemple 2</option>
+                <option value="3" >exemple 3</option>
+                <option value="4">exemple 4</option>
+                <option value="5" >exemple 5</option>
+                </select>
+                <br />
+                
+                <div class="control-group">
+                    <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                        <label>Le texte</label>
+                        <textarea class="form-control" id="text" name="texte" v-model="text" rows="5" placeholder="Text" required="required" data-validation-required-message="Please enter a Text."></textarea>
+                        <p class="help-block text-danger"></p>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                        <label>La question</label>
+                        <input class="form-control" id="question" v-model="question" name="question" type="text" placeholder="Question" required="required" data-validation-required-message="Please enter your question." />
+                        <p class="help-block text-danger"></p>
+                    </div>
+                </div>
+
+                
+                <br />
+                <div id="success"></div>
+                <div class="form-group" v-if="patienter == 0"><button class="btn btn-primary btn-xl" id="sendMessageButton" type="submit" v-on:click="transfert" >
+                    Répondre
+                    
+                </button>
+                    
+                    <button class="btn btn-primary btn-xl" data-toggle="modal" data-target="#exampleModal" v-if="popup == 1" style="margin-left: 300px;">Afficher les détails</button>
+                </div>
+                <div class="form-group" v-if="patienter == 1">
+                    <button class="btn btn-primary btn-xl" id="sendMessageButton" type="submit"  disabled> 
+                        <span class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></span> Veuillez patienter
+                    </button>
+                </div>
+                <div id="success"></div>
+
+
+                <div class="control-group">
+                    <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                        <label>La réponse</label>
+                        <input class="form-control" id="reponse" v-model="reponse" name="reponse" type="text" placeholder="La réponse" />
+                        <p class="help-block text-danger"></p>
+                    </div>
+                </div>
+            
+        </div>
+    </div>
+</div>
+</section>
+
+
+<!-- Modal -->
+<div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Question answering</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+   
+    
+    <div class="modal-body">
+        <h6>La question:</h6>
+        <p>{{ question }}</p>
+        <h6>La réponse dans le contexte :</h6>
+        <p v-html="reponse_popup"></p>
+        <br /> <br />
+        Le temps d'execution est de {{ time /1000 }} s
+        <br /><br />
+        <div v-if="tab == 2">
+            <h6>La réponse commence à :{{answer_start }}</h6>
+            <h6>La réponse finit à :{{ answer_end }}</h6>
+            <h3>Matrice d'attention</h3>
+            <div id="carouselExampleControls" class="carousel slide" data-ride="carousel" >
+                <div class="carousel-inner" >
+                    <div class="carousel-item" v-for="(pic,valeur) in image" v-bind:class="{active: valeur==0}">
+                        <img v-bind:src="pic">
+                    </div>
+                </div>
+                <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true" style="color:black;"></span>
+                    <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true" style="color:black;"></span>
+                    <span class="sr-only">Next</span>
+                    </a>
+            </div>
+    </div>
+        <div v-if="tab == 1">
+            <h5>Tableau des distances</h5>
+            <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">Phrase</th>
+                    <th scope="col">Distance</th>
+                  </tr>
+                </thead>
+                <tbody v-for="(phrase,distance) in sentences">
+                  <tr>
+                    <th scope="row" v-if="distance == reponse"><span style="color: red;">{{ distance }}</span></th>
+                    <th scope="row" v-else>{{ distance }}</th>
+                    <td>{{  phrase}}</td>
+                    </tr>
+                </tbody>
+              </table>
+        </div>
+        <div v-if="tab == 4">
+            <h6>La réponse commence à :{{answer_start }}</h6>
+            <h6>La réponse finit à :{{ answer_end }}</h6>
+            <h3>La matrice self-attention</h3>
+            <select class="custom-select" v-model="layer"><br />
+      <option value="1" selected>Layer 1</option>
+      <option value="2">Layer 2</option>
+      <option value="3">Layer 3</option>
+      <option value="4">Layer 4</option>
+      <option value="5">Layer 5</option>
+      <option value="6">Layer 6</option>
+      <option value="7">Layer 7</option>
+      <option value="8">Layer 8</option>
+      <option value="9">Layer 9</option>
+      <option value="10">Layer 10</option>
+      <option value="11">Layer 11</option>
+      <option value="12">Layer 12</option>
+    </select>
+    <br /><br />
+            <div v-if="print_layer == 0">
+            <a href="#" class="btn btn-primary btn-lg active" role="button" aria-pressed="true" v-on:click="layer_afficher">Afficher la matrice self-attention</a>
+            </div>
+            <div v-if="print_layer == 1">
+                
+            <a href="#" class="btn btn-primary btn-lg active" role="button" aria-pressed="true" disabled><span class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></span> Veuillez patienter</a>
+            </div>
+            <div v-if="affiche">
+                <h3>Matrice self-attention</h3>
+            <div id="carouselExampleControls" class="carousel slide" data-ride="carousel" >
+                <div class="carousel-inner" >
+                    <div class="carousel-item" v-for="(pic,valeur) in image" v-bind:class="{active: valeur==0}">
+                        <img v-bind:src="pic">
+                    </div>
+                </div>
+                <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true" style="color:black;"></span>
+                    <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true" style="color:black;"></span>
+                    <span class="sr-only">Next</span>
+                    </a>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    </div>
+</div>
+</div>
+</div>
+
+<!-- videddddddddddddddddd-->
+
+<script src="static/assets/jquery.js"></script>
+    <script src="static/assets/bootstrap.js"></script>
+    <!-- Third party plugin JS-->
+    <script src="static/assets/cloud.js"></script>
+    <!-- Contact form JS-->
+    <script src="static/assets/mail/jqBootstrapValidation.js"></script>
+    <script src="static/assets/mail/contact_me.js"></script>
+    <!-- Core theme JS-->
+    <script src="static/js/scripts.js"></script>
+    <script src="static/assets/vue.js"></script>
+    <script src="static/js/Myjs.js"></script>
+</body>
+</html>

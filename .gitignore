@@ -1,0 +1,6 @@
+GloVe/*/*
+InferSent/*/*
+*.gz
+*.txt
+*.vec
+*.pkl
