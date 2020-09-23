@@ -5,6 +5,8 @@
 
 We have four models trained on Squad dataset ( stanford question answering dataset ), the task is the domain of question answering, to answer questions about a text given.
 
+Report document of the project is in french. 
+
 ---
 ## Tools and laguages :
 
